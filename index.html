@@ -1,0 +1,364 @@
+<html><head><base href="https://tradingdashboard.example.com/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MR BEAST SYMBOL ANALYZER</title>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #1e222d;
+        color: #ffffff;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .header h1 {
+        color: #ffd700;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        margin-bottom: 5px;
+    }
+    .header p {
+        color: #a9a9a9;
+        margin-top: 0;
+    }
+    .selectors {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .selectors select {
+        padding: 10px;
+        font-size: 16px;
+        background-color: #2a2e39;
+        color: #ffffff;
+        border: 1px solid #4a4a4a;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        flex-grow: 1;
+        margin-right: 10px;
+    }
+    .charts-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    .main-chart {
+        flex: 1;
+        margin-bottom: 20px;
+    }
+    .secondary-charts {
+        display: flex;
+        flex: 1;
+    }
+    .secondary-chart, .supplemental-chart {
+        flex: 1;
+        margin-right: 10px;
+    }
+    .supplemental-chart {
+        margin-right: 0;
+    }
+    .widget {
+        height: 100%;
+        border: 1px solid #4a4a4a;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MR BEAST SYMBOL ANALYZER</h1>
+            <p>desarrolladormadrid</p>
+        </div>
+        <div class="selectors">
+            <select id="forex-select" onchange="updateChartsFromSelect('forex-select')">
+                <option value="">Select Forex</option>
+                <option value="XAUUSD" selected>Gold (XAU/USD)</option>
+                <option value="EURUSD">Euro vs US Dollar (EUR/USD)</option>
+                <option value="GBPUSD">British Pound vs US Dollar (GBP/USD)</option>
+                <option value="USDJPY">US Dollar vs Japanese Yen (USD/JPY)</option>
+                <option value="AUDUSD">Australian Dollar vs US Dollar (AUD/USD)</option>
+                <option value="USDCAD">US Dollar vs Canadian Dollar (USD/CAD)</option>
+                <option value="NZDUSD">New Zealand Dollar vs US Dollar (NZD/USD)</option>
+                <option value="USDCHF">US Dollar vs Swiss Franc (USD/CHF)</option>
+                <option value="EURJPY">Euro vs Japanese Yen (EUR/JPY)</option>
+                <option value="GBPJPY">British Pound vs Japanese Yen (GBP/JPY)</option>
+                <option value="EURGBP">Euro vs British Pound (EUR/GBP)</option>
+                <option value="AUDJPY">Australian Dollar vs Japanese Yen (AUD/JPY)</option>
+                <option value="EURAUD">Euro vs Australian Dollar (EUR/AUD)</option>
+                <option value="CADJPY">Canadian Dollar vs Japanese Yen (CAD/JPY)</option>
+                <option value="GBPAUD">British Pound vs Australian Dollar (GBP/AUD)</option>
+                <option value="EURCAD">Euro vs Canadian Dollar (EUR/CAD)</option>
+                <option value="AUDNZD">Australian Dollar vs New Zealand Dollar (AUD/NZD)</option>
+                <option value="GBPCAD">British Pound vs Canadian Dollar (GBP/CAD)</option>
+                <option value="AUDCAD">Australian Dollar vs Canadian Dollar (AUD/CAD)</option>
+                <option value="NZDJPY">New Zealand Dollar vs Japanese Yen (NZD/JPY)</option>
+                <option value="EURNZD">Euro vs New Zealand Dollar (EUR/NZD)</option>
+            </select>
+            <select id="stocks-select" onchange="updateChartsFromSelect('stocks-select')">
+                <option value="">Select Stocks</option>
+                <option value="MCD">McDonald's (MCD)</option>
+                <option value="NKE">Nike (NKE)</option>
+                <option value="AAPL">Apple (AAPL)</option>
+                <option value="GOOGL">Google (GOOGL)</option>
+                <option value="MSFT">Microsoft (MSFT)</option>
+                <option value="AMZN">Amazon (AMZN)</option>
+                <option value="FB">Facebook (FB)</option>
+                <option value="TSLA">Tesla (TSLA)</option>
+                <option value="NFLX">Netflix (NFLX)</option>
+                <option value="DIS">Disney (DIS)</option>
+                <option value="NVDA">NVIDIA (NVDA)</option>
+                <option value="JPM">JPMorgan Chase (JPM)</option>
+                <option value="V">Visa (V)</option>
+            </select>
+            <select id="crypto-select" onchange="updateChartsFromSelect('crypto-select')">
+                <option value="">Select Crypto</option>
+                <option value="BTCUSD">Bitcoin (BTC/USD)</option>
+                <option value="ETHUSD">Ethereum (ETH/USD)</option>
+                <option value="XRPUSD">Ripple (XRP/USD)</option>
+            </select>
+            <select id="futures-select" onchange="updateChartsFromSelect('futures-select')">
+                <option value="">Seleccionar Futuros</option>
+                <option value="ES1!">E-mini S&P 500 (ES)</option>
+                <option value="NQ1!">E-mini NASDAQ 100 (NQ)</option>
+                <option value="YM1!">E-mini Dow (YM)</option>
+                <option value="RTY1!">E-mini Russell 2000 (RTY)</option>
+                <option value="ZB1!">Bonos del Tesoro a 30 años (ZB)</option>
+                <option value="ZN1!">Notas del Tesoro a 10 años (ZN)</option>
+                <option value="ZF1!">Notas del Tesoro a 5 años (ZF)</option>
+                <option value="ZT1!">Notas del Tesoro a 2 años (ZT)</option>
+                <option value="GC1!">Oro (GC)</option>
+                <option value="SI1!">Plata (SI)</option>
+                <option value="PL1!">Platino (PL)</option>
+                <option value="HG1!">Cobre (HG)</option>
+                <option value="CL1!">Petróleo Crudo WTI (CL)</option>
+                <option value="NG1!">Gas Natural (NG)</option>
+                <option value="ZC1!">Maíz (ZC)</option>
+                <option value="ZW1!">Trigo (ZW)</option>
+                <option value="ZS1!">Soja (ZS)</option>
+                <option value="KC1!">Café (KC)</option>
+                <option value="CT1!">Algodón (CT)</option>
+                <option value="CC1!">Cacao (CC)</option>
+            </select>
+            <select id="layout-select" onchange="changeLayout()">
+                <option value="">Select Layout</option>
+                <option value="default" selected>Default (1 large + 2 small)</option>
+                <option value="three-equal">Three Equal Columns</option>
+                <option value="two-column">Two Column Layout</option>
+                <option value="single-large">Single Large Chart</option>
+                <option value="four-grid">Four Chart Grid</option>
+            </select>
+        </div>
+        <div id="charts-container" class="charts-container">
+            <div class="main-chart">
+                <div id="main-chart" class="widget"></div>
+            </div>
+            <div class="secondary-charts">
+                <div class="secondary-chart">
+                    <div id="secondary-chart" class="widget"></div>
+                </div>
+                <div class="supplemental-chart">
+                    <div id="supplemental-chart" class="widget"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSymbol = "XAUUSD";
+        let mainChart, secondaryChart, supplementalChart, fourthChart;
+
+        function createWidget(containerId, interval, studies) {
+            return new TradingView.widget({
+                "width": "100%",
+                "height": "100%",
+                "symbol": currentSymbol,
+                "interval": interval,
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#2a2e39",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": containerId,
+                "studies": studies,
+                "autosize": true
+            });
+        }
+
+        function initCharts() {
+            mainChart = createWidget("main-chart", "D", [
+                "MASimple@tv-basicstudies",
+                "RSI@tv-basicstudies",
+                "MACD@tv-basicstudies",
+                "BB@tv-basicstudies"
+            ]);
+            secondaryChart = createWidget("secondary-chart", "5", [
+                "MASimple@tv-basicstudies",
+                "StochasticRSI@tv-basicstudies",
+                "MACD@tv-basicstudies"
+            ]);
+            supplementalChart = createWidget("supplemental-chart", "W", [
+                "MASimple@tv-basicstudies",
+                "RSI@tv-basicstudies",
+                "MACD@tv-basicstudies",
+                "EMA@tv-basicstudies"
+            ]);
+        }
+
+        function updateChartsFromSelect(selectId) {
+            const select = document.getElementById(selectId);
+            if (select) {
+                const newSymbol = select.value;
+                if (newSymbol) {
+                    updateSymbol(newSymbol);
+                    // Reset other selects
+                    const selects = ['forex-select', 'stocks-select', 'crypto-select', 'futures-select'];
+                    selects.forEach(id => {
+                        if (id !== selectId && document.getElementById(id)) {
+                            document.getElementById(id).value = "";
+                        }
+                    });
+                }
+            }
+        }
+
+        function updateSymbol(newSymbol) {
+            if (newSymbol && newSymbol !== currentSymbol) {
+                currentSymbol = newSymbol;
+                
+                // Recreate widgets with the new symbol
+                if (mainChart) mainChart.remove();
+                if (secondaryChart) secondaryChart.remove();
+                if (supplementalChart) supplementalChart.remove();
+                if (fourthChart) fourthChart.remove();
+                
+                mainChart = createWidget("main-chart", "D", [
+                    "MASimple@tv-basicstudies",
+                    "RSI@tv-basicstudies",
+                    "MACD@tv-basicstudies",
+                    "BB@tv-basicstudies"
+                ]);
+                secondaryChart = createWidget("secondary-chart", "5", [
+                    "MASimple@tv-basicstudies",
+                    "StochasticRSI@tv-basicstudies",
+                    "MACD@tv-basicstudies"
+                ]);
+                supplementalChart = createWidget("supplemental-chart", "W", [
+                    "MASimple@tv-basicstudies",
+                    "RSI@tv-basicstudies",
+                    "MACD@tv-basicstudies",
+                    "EMA@tv-basicstudies"
+                ]);
+                if (document.getElementById("fourth-chart")) {
+                    fourthChart = createWidget("fourth-chart", "H", [
+                        "MASimple@tv-basicstudies",
+                        "RSI@tv-basicstudies",
+                        "MACD@tv-basicstudies"
+                    ]);
+                }
+            }
+        }
+
+        function changeLayout() {
+            const layout = document.getElementById("layout-select").value;
+            const container = document.getElementById("charts-container");
+            
+            // Remove all existing charts
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+            
+            // Create new layout
+            switch(layout) {
+                case "default":
+                    container.innerHTML = `
+                        <div class="main-chart">
+                            <div id="main-chart" class="widget"></div>
+                        </div>
+                        <div class="secondary-charts">
+                            <div class="secondary-chart">
+                                <div id="secondary-chart" class="widget"></div>
+                            </div>
+                            <div class="supplemental-chart">
+                                <div id="supplemental-chart" class="widget"></div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case "three-equal":
+                    container.innerHTML = `
+                        <div style="display: flex; height: 100%;">
+                            <div style="flex: 1; margin-right: 10px;">
+                                <div id="main-chart" class="widget" style="height: 100%;"></div>
+                            </div>
+                            <div style="flex: 1; margin-right: 10px;">
+                                <div id="secondary-chart" class="widget" style="height: 100%;"></div>
+                            </div>
+                            <div style="flex: 1;">
+                                <div id="supplemental-chart" class="widget" style="height: 100%;"></div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case "two-column":
+                    container.innerHTML = `
+                        <div style="display: flex; height: 100%;">
+                            <div style="flex: 1; margin-right: 10px;">
+                                <div id="main-chart" class="widget" style="height: 100%;"></div>
+                            </div>
+                            <div style="flex: 1;">
+                                <div id="secondary-chart" class="widget" style="height: calc(50% - 5px); margin-bottom: 10px;"></div>
+                                <div id="supplemental-chart" class="widget" style="height: calc(50% - 5px);"></div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case "single-large":
+                    container.innerHTML = `
+                        <div style="height: 100%;">
+                            <div id="main-chart" class="widget" style="height: 100%;"></div>
+                        </div>
+                    `;
+                    break;
+                case "four-grid":
+                    container.innerHTML = `
+                        <div style="display: flex; flex-wrap: wrap; height: 100%;">
+                            <div style="flex: 1 1 50%; height: 50%; padding: 0 5px 5px 0;">
+                                <div id="main-chart" class="widget" style="height: 100%;"></div>
+                            </div>
+                            <div style="flex: 1 1 50%; height: 50%; padding: 0 0 5px 5px;">
+                                <div id="secondary-chart" class="widget" style="height: 100%;"></div>
+                            </div>
+                            <div style="flex: 1 1 50%; height: 50%; padding: 5px 5px 0 0;">
+                                <div id="supplemental-chart" class="widget" style="height: 100%;"></div>
+                            </div>
+                            <div style="flex: 1 1 50%; height: 50%; padding: 5px 0 0 5px;">
+                                <div id="fourth-chart" class="widget" style="height: 100%;"></div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            // Reinitialize charts
+            initCharts();
+        }
+
+        // Initialize charts when the page loads
+        window.addEventListener('load', initCharts);
+    </script>
+</body></html>
